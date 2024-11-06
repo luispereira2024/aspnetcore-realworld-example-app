@@ -51,3 +51,5 @@ jobs:
         with:
           name: CoverageReport_${{ matrix.framework }}_${{ matrix.os }}
           path: coveragereport
+      - name: Build
+        run: dotnet build /WarnAsError
