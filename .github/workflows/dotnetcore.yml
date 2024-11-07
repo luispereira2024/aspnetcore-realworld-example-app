@@ -25,11 +25,12 @@ jobs:
     # Run tests (optional, if you have tests in the project)
     - run: dotnet test build/build.csproj
 
-    # Install CycloneDX CLI
+    # Download and Install CycloneDX CLI - specify a stable version
     - name: Install CycloneDX CLI
       run: |
-        wget https://github.com/CycloneDX/cyclonedx-cli/releases/latest/download/cyclonedx-linux-x64.tar.gz
-        tar -xzf cyclonedx-linux-x64.tar.gz
+        VERSION=0.27.1
+        curl -sL https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64.tar.gz -o cyclonedx.tar.gz
+        tar -xzf cyclonedx.tar.gz
         sudo mv cyclonedx /usr/local/bin/
 
     # Generate the SBOM
