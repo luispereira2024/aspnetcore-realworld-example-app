@@ -28,7 +28,7 @@ jobs:
     # Download and Install CycloneDX CLI from tar.gz
     - name: Install CycloneDX CLI
       run: |
-        VERSION=0.27.1
+        VERSION=0.26.0
         DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64.tar.gz"
         
         # Debug: Print the download URL
