@@ -31,13 +31,19 @@ jobs:
         VERSION=0.27.1
         DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64.tar.gz"
         
-        # Download the tar.gz file
+        # Debug: Print the download URL
         echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
+
+        # Download the tar.gz file
         curl -sL "$DOWNLOAD_URL" -o cyclonedx.tar.gz
         
-        # Verify if the file is a valid tar.gz file
+        # Debug: Check the downloaded file's type
+        file cyclonedx.tar.gz
+        
+        # If the downloaded file is not a tar.gz, print its contents for debugging
         if ! file cyclonedx.tar.gz | grep -q 'gzip compressed data'; then
-          echo "Error: Downloaded file is not in gzip format. Exiting."
+          echo "Error: Downloaded file is not in gzip format. Here is the file content:"
+          cat cyclonedx.tar.gz
           exit 1
         fi
         
