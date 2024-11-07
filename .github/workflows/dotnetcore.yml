@@ -25,12 +25,17 @@ jobs:
     # Run tests (optional, if you have tests in the project)
     - run: dotnet test build/build.csproj
 
-    # Generate the SBOM using CycloneDX GitHub Action
+    # Install CycloneDX CLI
+    - name: Install CycloneDX CLI
+      run: |
+        wget https://github.com/CycloneDX/cyclonedx-cli/releases/latest/download/cyclonedx-linux-x64.tar.gz
+        tar -xzf cyclonedx-linux-x64.tar.gz
+        sudo mv cyclonedx /usr/local/bin/
+
+    # Generate the SBOM
     - name: Generate SBOM
-      uses: CycloneDX/gh-cyclonedx-action@v1
-      with:
-        output-format: xml
-        output-file: sbom.xml
+      run: |
+        cyclonedx -o sbom.xml
 
     # Optionally, upload the SBOM as an artifact
     - name: Upload SBOM artifact
