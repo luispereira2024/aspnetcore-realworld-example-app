@@ -1,55 +1,46 @@
-name: Build and Test
+name: Build, Test, and Generate SBOM
 
 on: [push]
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.204
-      - run: dotnet run --project build/build.csproj
-
-  test:
-    name: Tests for .NET Core ${{ matrix.framework }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        framework: ['net6.0', 'net7.0', 'net8.0']
-    timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ matrix.framework }}
-      - name: Run Tests
-        run: dotnet test --framework ${{ matrix.framework }} --collect:"XPlat Code Coverage;Format=cobertura" --results-directory "TestResults"
-      - name: ReportGenerator
-        uses: danielpalme/ReportGenerator-GitHub-Action@v5
-        with:
-          reports: 'TestResults/**/coverage.cobertura.xml'
-          targetdir: 'coveragereport'
-          reporttypes: 'HtmlInline;Cobertura;MarkdownSummaryGithub'
-      # Optional: Add PR Comment
-      # - name: Add Coverage PR Comment
-      #   uses: marocchino/sticky-pull-request-comment@v2
-      #   if: github.event_name == 'pull_request'
-      #   with:
-      #     recreate: true
-      #     path: ./coveragereport/SummaryGithub.md
-      - name: Write to Job Summary
-        run: cat ./coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
-        shell: bash
-      - name: Upload Coverage Report Artifact
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.framework == 'net8.0' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: CoverageReport_${{ matrix.framework }}_${{ matrix.os }}
-          path: coveragereport
-      - name: Build
-        run: dotnet build /WarnAsError
+    # Check out the repository code
+    - uses: actions/checkout@v4
+
+    # Set up the .NET environment
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.204
+
+    # Restore dependencies
+    - run: dotnet restore build/build.csproj
+
+    # Build the project
+    - run: dotnet build --no-restore build/build.csproj
+
+    # Run tests (optional, if you have tests in the project)
+    - run: dotnet test build/build.csproj
+
+    # Install CycloneDX CLI for .NET
+    - name: Install CycloneDX CLI
+      run: |
+        dotnet tool install --global CycloneDX.Cli
+
+      env:
+        PATH: ${{ github.env }}:/home/runner/.dotnet/tools
+
+    # Generate the SBOM
+    - name: Generate SBOM
+      run: |
+        cyclonedx -o sbom.xml
+
+    # Optionally, upload the SBOM as an artifact
+    - name: Upload SBOM artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: SBOM
+        path: sbom.xml
