@@ -29,7 +29,19 @@ jobs:
     - name: Install CycloneDX CLI
       run: |
         VERSION=0.27.1
-        curl -sL https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64.tar.gz -o cyclonedx.tar.gz
+        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64.tar.gz"
+        
+        # Download CycloneDX CLI
+        echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
+        curl -sL "$DOWNLOAD_URL" -o cyclonedx.tar.gz
+        
+        # Verify that the file was downloaded correctly
+        if ! file cyclonedx.tar.gz | grep -q 'gzip compressed data'; then
+          echo "Error: Downloaded file is not in gzip format. Exiting."
+          exit 1
+        fi
+        
+        # Extract and move the binary
         tar -xzf cyclonedx.tar.gz
         sudo mv cyclonedx /usr/local/bin/
 
