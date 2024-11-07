@@ -24,11 +24,11 @@ jobs:
     # Run tests (optional, if you have tests in the project)
     - run: dotnet test build/build.csproj
 
-    # Download and Install CycloneDX CLI from tar.gz
+    # Download and Install CycloneDX CLI from .deb file
     - name: Install CycloneDX CLI
       run: |
-        VERSION=0.25.0  # Change this to a valid version found on GitHub
-        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64.tar.gz"
+        VERSION=0.27.1  # Replace with the desired version of CycloneDX CLI
+        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-cli-$VERSION-linux-x64.deb"
 
         # Debug: Print the download URL
         echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
@@ -40,24 +40,14 @@ jobs:
           exit 1
         fi
 
-        # Download the tar.gz file
-        curl -sL "$DOWNLOAD_URL" -o cyclonedx.tar.gz
+        # Download the .deb package
+        curl -sL "$DOWNLOAD_URL" -o cyclonedx-cli.deb
 
-        # Debug: Check the downloaded file's type
-        file cyclonedx.tar.gz
+        # Install the .deb package
+        sudo dpkg -i cyclonedx-cli.deb
         
-        # If the downloaded file is not a tar.gz, print its contents for debugging
-        if ! file cyclonedx.tar.gz | grep -q 'gzip compressed data'; then
-          echo "Error: Downloaded file is not in gzip format. Here is the file content:"
-          cat cyclonedx.tar.gz
-          exit 1
-        fi
-        
-        # Extract the downloaded file
-        tar -xzf cyclonedx.tar.gz
-        
-        # Move the cyclonedx binary to the correct location
-        sudo mv cyclonedx /usr/local/bin/
+        # Install dependencies if dpkg reports any issues
+        sudo apt-get install -f
 
     # Generate the SBOM
     - name: Generate SBOM
