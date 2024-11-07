@@ -25,25 +25,18 @@ jobs:
     # Run tests (optional, if you have tests in the project)
     - run: dotnet test build/build.csproj
 
-    # Download and Install CycloneDX CLI - specify a stable version
+    # Download and Install CycloneDX CLI as .deb package
     - name: Install CycloneDX CLI
       run: |
         VERSION=0.27.1
-        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64.tar.gz"
+        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-cli-$VERSION.deb"
         
-        # Download CycloneDX CLI
+        # Download the .deb file
         echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
-        curl -sL "$DOWNLOAD_URL" -o cyclonedx.tar.gz
+        curl -sL "$DOWNLOAD_URL" -o cyclonedx-cli.deb
         
-        # Verify that the file was downloaded correctly
-        if ! file cyclonedx.tar.gz | grep -q 'gzip compressed data'; then
-          echo "Error: Downloaded file is not in gzip format. Exiting."
-          exit 1
-        fi
-        
-        # Extract and move the binary
-        tar -xzf cyclonedx.tar.gz
-        sudo mv cyclonedx /usr/local/bin/
+        # Install the .deb package
+        sudo dpkg -i cyclonedx-cli.deb || sudo apt-get install -f -y
 
     # Generate the SBOM
     - name: Generate SBOM
