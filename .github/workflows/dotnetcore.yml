@@ -21,18 +21,17 @@ jobs:
 
     - name: Install CycloneDX CLI
       run: |
-        VERSION=0.27.1  # Replace with the desired version
+        VERSION=0.27.1
         DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64"
         
         echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
         curl -sL "$DOWNLOAD_URL" -o cyclonedx
-        
         chmod +x cyclonedx
         sudo mv cyclonedx /usr/local/bin/cyclonedx
 
     - name: Generate SBOM
       run: |
-        dotnet cyclonedx -j Conduit.sln -o sbom.json
+        cyclonedx convert --output-format json --input-file Conduit.sln --output-file sbom.json
 
     - name: Upload SBOM Artifact
       uses: actions/upload-artifact@v3
