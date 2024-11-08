@@ -25,15 +25,26 @@ jobs:
     - run: dotnet test build/build.csproj
 
     # Download and Install CycloneDX CLI from .deb file
-- name: Install CycloneDX CLI
-  run: |
-    VERSION=0.27.1  # Replace with the desired version
-    DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-cli-$VERSION-linux-x64.deb"
+    - name: Install CycloneDX CLI
+      run: |
+        VERSION=0.27.1  # Replace with the desired version of CycloneDX CLI
+        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-cli-$VERSION-linux-x64.deb"
 
-    echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
-    curl -sL "$DOWNLOAD_URL" -o cyclonedx.deb
-    
-    sudo dpkg -i cyclonedx.deb
+        # Print the download URL
+        echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
+
+        # Check if the download URL is valid
+        http_response=$(curl --write-out "%{http_code}" --silent --output /dev/null "$DOWNLOAD_URL")
+        if [ "$http_response" -ne 200 ]; then
+          echo "Error: Failed to download the file. HTTP response code: $http_response"
+          exit 1
+        fi
+
+        # Download the .deb package
+        curl -sL "$DOWNLOAD_URL" -o cyclonedx-cli.deb
+
+        # Install the .deb package
+        sudo dpkg -i cyclonedx-cli.deb
         
         # Install dependencies if dpkg reports any issues
         sudo apt-get install -f
