@@ -21,28 +21,23 @@ jobs:
 
     - name: Install CycloneDX CLI
       run: |
-        VERSION=0.27.1  # Replace with the desired version
+        VERSION=0.27.1
         DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64"
-
-        # Debug: Print the download URL
-        echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
-
-        # Download the CycloneDX CLI binary
         curl -sL "$DOWNLOAD_URL" -o cyclonedx
-
-        # Make the binary executable
         sudo chmod +x cyclonedx
-
-        # Move the cyclonedx binary to /usr/local/bin
         sudo mv cyclonedx /usr/local/bin/cyclonedx
 
     - name: Verify CycloneDX CLI Installation
       run: |
         cyclonedx --version
 
+    - name: Check build output
+      run: |
+        echo "Listing files in the build directory"
+        ls -R build/
+
     - name: Ensure correct paths
       run: |
-        echo "Checking build output"
         if [ ! -f "build/bin/Release/net6.0/myapp.dll" ]; then
           echo "myapp.dll not found, skipping SBOM generation"
           exit 1
