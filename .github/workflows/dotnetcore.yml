@@ -1,50 +1,51 @@
-name: Build and Generate SBOM
+name: Build, Test, and Generate SBOM
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-      - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0'
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.204
 
-      - name: Install dependencies
-        run: dotnet restore
+    - run: dotnet restore build/build.csproj
 
-      - name: Build the project
-        run: dotnet build --configuration Release
+    - run: dotnet build --no-restore build/build.csproj
 
-      - name: Publish the project
-        run: dotnet publish --configuration Release --output ./build/output/net6.0
+    - run: dotnet test build/build.csproj
 
-      - name: Verify if myapp.dll exists
-        run: |
-          if [ ! -f "./build/output/net6.0/myapp.dll" ]; then
-            echo "Error: myapp.dll not found in build/output/net6.0/"
-            exit 1
-          fi
+    - name: Install CycloneDX CLI
+      run: |
+        VERSION=0.27.1  # Replace with the desired version
+        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64"
 
-      - name: Install CycloneDX CLI
-        run: |
-          VERSION=0.27.1
-          DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-cli-$VERSION-linux-x64.tar.gz"
-          curl -sL "$DOWNLOAD_URL" -o cyclonedx.tar.gz
-          tar -xzf cyclonedx.tar.gz
-          sudo mv cyclonedx-cli-$VERSION/cyclonedx /usr/local/bin/cyclonedx
+        # Debug: Print the download URL
+        echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
 
-      - name: Generate SBOM with CycloneDX
-        run: |
-          cyclonedx convert --input-file ./build/output/net6.0/myapp.dll --output-file sbom.xml --input-format auto --output-format xml
+        # Download the CycloneDX CLI binary
+        curl -sL "$DOWNLOAD_URL" -o cyclonedx
+
+        # Make the binary executable
+        sudo chmod +x cyclonedx
+
+        # Move the cyclonedx binary to /usr/local/bin
+        sudo mv cyclonedx /usr/local/bin/cyclonedx
+
+    - name: Verify CycloneDX CLI Installation
+      run: |
+        cyclonedx --version
+
+    - name: Generate SBOM
+      run: |
+        cyclonedx -o sbom.xml
+
+    - name: Upload SBOM Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: SBOM
+        path: sbom.xml
