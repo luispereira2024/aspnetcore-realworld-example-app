@@ -28,7 +28,7 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: Publish the project
-        run: dotnet publish --configuration Release --output ./build/bin/Release/net6.0
+        run: dotnet publish --configuration Release --output ./build/output/net6.0
 
       - name: Install CycloneDX CLI
         run: |
@@ -40,8 +40,8 @@ jobs:
 
       - name: Generate SBOM with CycloneDX
         run: |
-          if [ ! -f "./build/bin/Release/net6.0/myapp.dll" ]; then
-            echo "Error: myapp.dll not found in build/bin/Release/net6.0/"
+          if [ ! -f "./build/output/net6.0/myapp.dll" ]; then
+            echo "Error: myapp.dll not found in build/output/net6.0/"
             exit 1
           fi
-          cyclonedx convert --input-file ./build/bin/Release/net6.0/myapp.dll --output-file sbom.xml --input-format auto --output-format xml
+          cyclonedx convert --input-file ./build/output/net6.0/myapp.dll --output-file sbom.xml --input-format auto --output-format xml
