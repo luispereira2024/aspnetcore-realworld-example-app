@@ -32,10 +32,10 @@ jobs:
 
     - name: Generate SBOM
       run: |
-        cyclonedx convert --input-file build/build.csproj --output-file sbom.xml --input-format xml --output-format xml --output-version v1_4
+        dotnet cyclonedx <solution file>.sln -j -o sbom.json
 
     - name: Upload SBOM Artifact
       uses: actions/upload-artifact@v3
       with:
         name: SBOM
-        path: sbom.xml
+        path: sbom.json
