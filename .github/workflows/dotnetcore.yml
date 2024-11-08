@@ -15,7 +15,7 @@ jobs:
 
     - run: dotnet restore build/build.csproj
 
-    - run: dotnet build --configuration Release build/build.csproj
+    - run: dotnet publish --configuration Release --output ./build/output build/build.csproj
 
     - run: dotnet test build/build.csproj
 
@@ -38,16 +38,16 @@ jobs:
 
     - name: Ensure correct paths
       run: |
-        if [ ! -f "build/bin/Release/net6.0/myapp.dll" ]; then
-          echo "myapp.dll not found in build/bin/Release/net6.0/"
-          echo "Listing files in build/bin/Release/net6.0"
-          ls -R build/bin/Release/net6.0
+        if [ ! -f "build/output/myapp.dll" ]; then
+          echo "myapp.dll not found in build/output/"
+          echo "Listing files in build/output"
+          ls -R build/output
           exit 1
         fi
 
     - name: Generate SBOM
       run: |
-        cyclonedx convert --input-file ./build/bin/Release/net6.0/myapp.dll --output-file sbom.xml --input-format auto --output-format xml
+        cyclonedx convert --input-file ./build/output/myapp.dll --output-file sbom.xml --input-format auto --output-format xml
 
     - name: Upload SBOM Artifact
       uses: actions/upload-artifact@v3
