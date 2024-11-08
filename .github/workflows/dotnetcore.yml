@@ -33,8 +33,11 @@ jobs:
         # Extract the downloaded file
         tar -xzf cyclonedx.tar.gz
 
+        # Find the extracted directory
+        EXTRACTED_DIR=$(tar -tf cyclonedx.tar.gz | head -n 1 | cut -f1 -d"/")
+
         # Move the cyclonedx binary to /usr/local/bin
-        sudo mv cyclonedx-cli-*/cyclonedx /usr/local/bin/cyclonedx
+        sudo mv "$EXTRACTED_DIR/cyclonedx" /usr/local/bin/cyclonedx
         sudo chmod +x /usr/local/bin/cyclonedx
 
     - name: Verify CycloneDX CLI Installation
