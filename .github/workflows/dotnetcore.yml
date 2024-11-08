@@ -7,62 +7,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Check out the repository code
     - uses: actions/checkout@v4
 
-    # Set up the .NET environment
     - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.204
 
-    # Restore dependencies
     - run: dotnet restore build/build.csproj
 
-    # Build the project
     - run: dotnet build --no-restore build/build.csproj
 
-    # Run tests (optional)
     - run: dotnet test build/build.csproj
 
-    # Download and install CycloneDX CLI from the source .zip file
     - name: Install CycloneDX CLI
       run: |
-        VERSION=0.27.1  # Update if needed
+        VERSION=0.27.1  # Update as needed
         DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/archive/refs/tags/v$VERSION.zip"
 
         echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
-
-        # Download the .zip file containing the source
+        
         curl -sL "$DOWNLOAD_URL" -o cyclonedx-cli.zip
-
-        # Extract the source code
         unzip cyclonedx-cli.zip -d cyclonedx-cli-source
-
-        # Navigate to the extracted directory and build the CLI tool
         cd cyclonedx-cli-source/cyclonedx-cli-$VERSION/src/cyclonedx
 
-        # Build the specific project, outputting to ./output
+        # Build the CycloneDX CLI tool as a native executable
         dotnet publish cyclonedx.csproj -c Release -r linux-x64 --self-contained -o ./output
 
-        # Check if the output directory contains the binary
-        echo "Output directory contents:"
-        ls ./output
+        # Check the contents of the output directory
+        ls -la ./output
 
-        # Install CycloneDX CLI by moving the compiled binary to /usr/local/bin
+        # Ensure that the cyclonedx binary is executable and move it to /usr/local/bin
         sudo mv ./output/cyclonedx /usr/local/bin/cyclonedx
         sudo chmod +x /usr/local/bin/cyclonedx
 
-    # Verify if cyclonedx is installed correctly
-    - name: Verify CycloneDX CLI installation
-      run: cyclonedx --version
+    - name: Verify CycloneDX CLI Installation
+      run: |
+        cyclonedx --version
 
-    # Generate the SBOM using the CycloneDX CLI binary
     - name: Generate SBOM
       run: |
         cyclonedx -o sbom.xml
 
-    # Optionally, upload the SBOM as an artifact
-    - name: Upload SBOM artifact
+    - name: Upload SBOM Artifact
       uses: actions/upload-artifact@v3
       with:
         name: SBOM
