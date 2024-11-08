@@ -22,7 +22,7 @@ jobs:
     - name: Install CycloneDX CLI as Dotnet Tool
       run: |
         dotnet new tool-manifest --force
-        dotnet tool install CycloneDX.Cli --version 0.* --prerelease
+        dotnet tool install CycloneDX.Cli
 
     - name: Generate SBOM
       run: |
