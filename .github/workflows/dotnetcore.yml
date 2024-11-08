@@ -14,26 +14,16 @@ jobs:
         dotnet-version: 8.0.204
 
     - run: dotnet restore build/build.csproj
-
     - run: dotnet build --no-restore build/build.csproj
-
     - run: dotnet test build/build.csproj
 
     - name: Install CycloneDX CLI
       run: |
-        VERSION=0.27.1  # Replace with the desired version
+        VERSION=0.27.1
         DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64"
-
-        # Debug: Print the download URL
         echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
-
-        # Download the CycloneDX CLI binary
         curl -sL "$DOWNLOAD_URL" -o cyclonedx
-
-        # Make the binary executable
         sudo chmod +x cyclonedx
-
-        # Move the cyclonedx binary to /usr/local/bin
         sudo mv cyclonedx /usr/local/bin/cyclonedx
 
     - name: Verify CycloneDX CLI Installation
@@ -42,7 +32,7 @@ jobs:
 
     - name: Generate SBOM
       run: |
-        cyclonedx -o sbom.xml
+        cyclonedx convert --output-format xml --input-file build/build.csproj --output-file sbom.xml
 
     - name: Upload SBOM Artifact
       uses: actions/upload-artifact@v3
