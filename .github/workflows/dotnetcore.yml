@@ -8,7 +8,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
     - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.204
@@ -19,16 +18,8 @@ jobs:
 
     - run: dotnet test build/build.csproj
 
-    - name: Install CycloneDX CLI (from GitHub releases)
-      run: |
-        VERSION=0.27.1  # Use the desired version
-        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64"
-        
-        echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
-        curl -sL "$DOWNLOAD_URL" -o cyclonedx
-        
-        chmod +x cyclonedx
-        sudo mv cyclonedx /usr/local/bin/cyclonedx
+    - name: Install CycloneDX CLI
+      run: dotnet tool install --global CycloneDX
 
     - name: Generate SBOM
       run: |
