@@ -52,6 +52,10 @@ jobs:
         sudo mv ./output/cyclonedx /usr/local/bin/cyclonedx
         sudo chmod +x /usr/local/bin/cyclonedx
 
+    # Verify if cyclonedx is installed correctly
+    - name: Verify CycloneDX CLI installation
+      run: cyclonedx --version
+
     # Generate the SBOM using the CycloneDX CLI binary
     - name: Generate SBOM
       run: |
