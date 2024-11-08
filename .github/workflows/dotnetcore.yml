@@ -21,23 +21,20 @@ jobs:
 
     - name: Install CycloneDX CLI
       run: |
-        VERSION=0.27.1  # Update as needed
-        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/archive/refs/tags/v$VERSION.zip"
+        VERSION=0.27.1  # Replace with the desired version
+        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/archive/refs/tags/v$VERSION.tar.gz"
 
+        # Debug: Print the download URL
         echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
-        
-        curl -sL "$DOWNLOAD_URL" -o cyclonedx-cli.zip
-        unzip cyclonedx-cli.zip -d cyclonedx-cli-source
-        cd cyclonedx-cli-source/cyclonedx-cli-$VERSION/src/cyclonedx
 
-        # Build the CycloneDX CLI tool as a self-contained native executable
-        dotnet publish cyclonedx.csproj -c Release -r linux-x64 --self-contained -o ./output
+        # Download the tar.gz file
+        curl -sL "$DOWNLOAD_URL" -o cyclonedx.tar.gz
 
-        # Check the contents of the output directory
-        ls -la ./output
+        # Extract the downloaded file
+        tar -xzf cyclonedx.tar.gz
 
-        # Ensure that the cyclonedx binary is executable and move it to /usr/local/bin
-        sudo mv ./output/cyclonedx /usr/local/bin/cyclonedx
+        # Move the cyclonedx binary to /usr/local/bin
+        sudo mv cyclonedx-cli-*/cyclonedx /usr/local/bin/cyclonedx
         sudo chmod +x /usr/local/bin/cyclonedx
 
     - name: Verify CycloneDX CLI Installation
