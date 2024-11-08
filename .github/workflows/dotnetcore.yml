@@ -23,7 +23,7 @@ jobs:
 
     - name: Generate SBOM
       run: |
-        dotnet cyclonedx -j Conduit.sln -o sbom.json
+        dotnet CycloneDX -j Conduit.sln -o sbom.json
 
     - name: Upload SBOM Artifact
       uses: actions/upload-artifact@v3
