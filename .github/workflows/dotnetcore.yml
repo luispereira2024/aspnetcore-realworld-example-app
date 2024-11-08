@@ -30,7 +30,7 @@ jobs:
         unzip cyclonedx-cli.zip -d cyclonedx-cli-source
         cd cyclonedx-cli-source/cyclonedx-cli-$VERSION/src/cyclonedx
 
-        # Build the CycloneDX CLI tool as a native executable
+        # Build the CycloneDX CLI tool as a self-contained native executable
         dotnet publish cyclonedx.csproj -c Release -r linux-x64 --self-contained -o ./output
 
         # Check the contents of the output directory
