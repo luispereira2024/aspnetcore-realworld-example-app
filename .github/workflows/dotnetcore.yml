@@ -40,7 +40,7 @@ jobs:
     - name: Generate SBOM
       run: |
         # Generate the SBOM using the correct command for CycloneDX
-        cyclonedx convert --input-file build/bin/Release/net6.0/myapp.dll --output-file sbom.xml
+        cyclonedx convert --input-file build/bin/Release/net6.0/myapp.dll --output-file sbom.xml --input-format json --output-format json
 
     - name: Upload SBOM Artifact
       uses: actions/upload-artifact@v3
