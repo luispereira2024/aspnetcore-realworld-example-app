@@ -15,7 +15,7 @@ jobs:
 
     - run: dotnet restore build/build.csproj
 
-    - run: dotnet publish --configuration Release --output ./build/output build/build.csproj
+    - run: dotnet publish --configuration Release --output ./build/output --self-contained false --runtime linux-x64 build/build.csproj
 
     - run: dotnet test build/build.csproj
 
