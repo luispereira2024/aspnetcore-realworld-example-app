@@ -19,19 +19,14 @@ jobs:
 
     - run: dotnet test build/build.csproj
 
-    - name: Install CycloneDX CLI
+    - name: Install CycloneDX CLI as Dotnet Tool
       run: |
-        VERSION=0.27.1
-        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64"
-        
-        echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
-        curl -sL "$DOWNLOAD_URL" -o cyclonedx
-        chmod +x cyclonedx
-        sudo mv cyclonedx /usr/local/bin/cyclonedx
+        dotnet new tool-manifest  # Only if not using an existing manifest
+        dotnet tool install CycloneDX.Cli --version 0.27.1
 
     - name: Generate SBOM
       run: |
-        cyclonedx convert --output-format json --input-file Conduit.sln --output-file sbom.json
+        dotnet cyclonedx -j Conduit.sln -o sbom.json
 
     - name: Upload SBOM Artifact
       uses: actions/upload-artifact@v3
