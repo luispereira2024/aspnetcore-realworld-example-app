@@ -31,15 +31,17 @@ jobs:
       run: |
         cyclonedx --version
 
-    - name: Check build output
+    - name: Check build output directory
       run: |
-        echo "Listing files in the build directory"
+        echo "Listing files in the build output directory"
         ls -R build/
 
     - name: Ensure correct paths
       run: |
         if [ ! -f "build/bin/Release/net6.0/myapp.dll" ]; then
-          echo "myapp.dll not found, skipping SBOM generation"
+          echo "myapp.dll not found in build/bin/Release/net6.0/"
+          echo "Listing files in build/bin/Release/net6.0"
+          ls -R build/bin/Release/net6.0
           exit 1
         fi
 
