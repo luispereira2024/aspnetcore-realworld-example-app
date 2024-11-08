@@ -21,7 +21,7 @@ jobs:
     # Build the project
     - run: dotnet build --no-restore build/build.csproj
 
-    # Run tests (optional, if you have tests in the project)
+    # Run tests (optional)
     - run: dotnet test build/build.csproj
 
     # Download and install CycloneDX CLI from the source .zip file
@@ -30,7 +30,6 @@ jobs:
         VERSION=0.27.1  # Update if needed
         DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/archive/refs/tags/v$VERSION.zip"
 
-        # Print the download URL
         echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
 
         # Download the .zip file containing the source
@@ -39,18 +38,24 @@ jobs:
         # Extract the source code
         unzip cyclonedx-cli.zip -d cyclonedx-cli-source
 
-        # Navigate to the extracted directory and publish the specific project file
+        # Navigate to the extracted directory and build the CLI tool
         cd cyclonedx-cli-source/cyclonedx-cli-$VERSION/src/cyclonedx
-        dotnet publish -c Release -o ../../output
+
+        # Build the specific project, outputting to ./output
+        dotnet publish cyclonedx.csproj -c Release -r linux-x64 --self-contained -o ./output
+
+        # Check if the output directory contains the binary
+        echo "Output directory contents:"
+        ls ./output
 
         # Move the CLI tool binary to a directory in PATH
-        sudo mv ../../output/cyclonedx-cli /usr/local/bin/cyclonedx-cli
-        sudo chmod +x /usr/local/bin/cyclonedx-cli
+        sudo mv ./output/cyclonedx /usr/local/bin/cyclonedx
+        sudo chmod +x /usr/local/bin/cyclonedx
 
     # Generate the SBOM
     - name: Generate SBOM
       run: |
-        cyclonedx-cli -o sbom.xml
+        cyclonedx -o sbom.xml
 
     # Optionally, upload the SBOM as an artifact
     - name: Upload SBOM artifact
