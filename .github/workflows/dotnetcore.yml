@@ -48,11 +48,11 @@ jobs:
         echo "Output directory contents:"
         ls ./output
 
-        # Move the CLI tool binary to a directory in PATH
+        # Install CycloneDX CLI by moving the compiled binary to /usr/local/bin
         sudo mv ./output/cyclonedx /usr/local/bin/cyclonedx
         sudo chmod +x /usr/local/bin/cyclonedx
 
-    # Generate the SBOM
+    # Generate the SBOM using the CycloneDX CLI binary
     - name: Generate SBOM
       run: |
         cyclonedx -o sbom.xml
