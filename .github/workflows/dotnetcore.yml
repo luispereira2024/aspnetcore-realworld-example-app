@@ -37,6 +37,13 @@ jobs:
       run: |
         cyclonedx --version
 
+    - name: Check if DLL exists
+      run: |
+        if [ ! -f "build/bin/Release/net6.0/myapp.dll" ]; then
+          echo "Error: myapp.dll not found in build/bin/Release/net6.0/"
+          exit 1
+        fi
+
     - name: Generate SBOM
       run: |
         # Generate the SBOM using the correct command for CycloneDX
