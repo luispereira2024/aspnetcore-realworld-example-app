@@ -22,23 +22,19 @@ jobs:
     - name: Install CycloneDX CLI
       run: |
         VERSION=0.27.1  # Replace with the desired version
-        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/archive/refs/tags/v$VERSION.tar.gz"
+        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64"
 
         # Debug: Print the download URL
         echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
 
-        # Download the tar.gz file
-        curl -sL "$DOWNLOAD_URL" -o cyclonedx.tar.gz
+        # Download the CycloneDX CLI binary
+        curl -sL "$DOWNLOAD_URL" -o cyclonedx
 
-        # Extract the downloaded file
-        tar -xzf cyclonedx.tar.gz
-
-        # Find the extracted directory
-        EXTRACTED_DIR=$(tar -tf cyclonedx.tar.gz | head -n 1 | cut -f1 -d"/")
+        # Make the binary executable
+        sudo chmod +x cyclonedx
 
         # Move the cyclonedx binary to /usr/local/bin
-        sudo mv "$EXTRACTED_DIR/cyclonedx" /usr/local/bin/cyclonedx
-        sudo chmod +x /usr/local/bin/cyclonedx
+        sudo mv cyclonedx /usr/local/bin/cyclonedx
 
     - name: Verify CycloneDX CLI Installation
       run: |
