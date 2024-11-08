@@ -41,8 +41,8 @@ jobs:
         cyclonedx --version
 
     - name: Generate SBOM
-      run: |
-        cyclonedx convert --input-file ./build/output/net6.0/myapp.dll --output-file sbom.xml --input-format auto --output-format xml
+  run: |
+    cyclonedx convert --input-file ./build/output/net6.0/myapp.dll --output-file sbom.xml --input-format autodetect --output-format xml
 
     - name: Upload SBOM Artifact
       uses: actions/upload-artifact@v3
