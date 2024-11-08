@@ -39,18 +39,12 @@ jobs:
         # Extract the source code
         unzip cyclonedx-cli.zip -d cyclonedx-cli-source
 
-        # Navigate to the extracted directory and build the CLI tool
-        cd cyclonedx-cli-source/cyclonedx-cli-$VERSION
-
-        # Build the CLI (with publish to ensure it creates a bin folder)
-        dotnet publish -c Release -r linux-x64 --self-contained -o ./output
-
-        # Verify the output directory
-        echo "Output directory contents:"
-        ls ./output
+        # Navigate to the extracted directory and publish the specific project file
+        cd cyclonedx-cli-source/cyclonedx-cli-$VERSION/src/cyclonedx
+        dotnet publish -c Release -o ../../output
 
         # Move the CLI tool binary to a directory in PATH
-        sudo mv ./output/cyclonedx-cli /usr/local/bin/cyclonedx-cli
+        sudo mv ../../output/cyclonedx-cli /usr/local/bin/cyclonedx-cli
         sudo chmod +x /usr/local/bin/cyclonedx-cli
 
     # Generate the SBOM
