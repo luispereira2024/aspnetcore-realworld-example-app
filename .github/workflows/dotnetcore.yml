@@ -19,10 +19,16 @@ jobs:
 
     - run: dotnet test build/build.csproj
 
-    - name: Install CycloneDX CLI as Dotnet Tool
+    - name: Install CycloneDX CLI (from GitHub releases)
       run: |
-        dotnet new tool-manifest --force
-        dotnet tool install CycloneDX.Cli
+        VERSION=0.27.1  # Use the desired version
+        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64"
+        
+        echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
+        curl -sL "$DOWNLOAD_URL" -o cyclonedx
+        
+        chmod +x cyclonedx
+        sudo mv cyclonedx /usr/local/bin/cyclonedx
 
     - name: Generate SBOM
       run: |
