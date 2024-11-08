@@ -19,26 +19,14 @@ jobs:
 
     - run: dotnet test build/build.csproj
 
-    - name: Install CycloneDX CLI
-      run: |
-        VERSION=0.27.1
-        DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64"
-        echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
-        curl -sL "$DOWNLOAD_URL" -o cyclonedx
-        sudo chmod +x cyclonedx
-        sudo mv cyclonedx /usr/local/bin/cyclonedx
-
-    - name: Verify CycloneDX CLI Installation
-      run: cyclonedx --version
+    - name: Install CycloneDX CLI for .NET
+      run: dotnet tool install --global CycloneDX.Cli
 
     - name: Generate SBOM
+      env:
+        PATH: $PATH:/home/runner/.dotnet/tools  # Add dotnet tools to the PATH
       run: |
-        if [ -f "build/output/build.dll" ]; then
-          cyclonedx convert --input-file build/output/build.dll --output-file sbom.xml --input-format xml --output-format xml
-        else
-          echo "Error: DLL file not found in build/output/"
-          exit 1
-        fi
+        cyclonedx-cli sbom --project-name "MyApp" --output-format xml --output-file sbom.xml --include-project-references --output-version v1_4
 
     - name: Upload SBOM Artifact
       uses: actions/upload-artifact@v3
