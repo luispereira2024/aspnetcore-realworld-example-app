@@ -24,9 +24,6 @@ jobs:
         VERSION=0.27.1  # Replace with the desired version
         DOWNLOAD_URL="https://github.com/CycloneDX/cyclonedx-cli/releases/download/v$VERSION/cyclonedx-linux-x64"
 
-        # Debug: Print the download URL
-        echo "Downloading CycloneDX CLI from $DOWNLOAD_URL"
-
         # Download the CycloneDX CLI binary
         curl -sL "$DOWNLOAD_URL" -o cyclonedx
 
@@ -43,7 +40,7 @@ jobs:
     - name: Generate SBOM
       run: |
         # Generate the SBOM using the correct command for CycloneDX
-        cyclonedx convert --input build/bin/Release/net6.0/myapp.dll --output sbom.xml
+        cyclonedx convert --input-file build/bin/Release/net6.0/myapp.dll --output-file sbom.xml
 
     - name: Upload SBOM Artifact
       uses: actions/upload-artifact@v3
