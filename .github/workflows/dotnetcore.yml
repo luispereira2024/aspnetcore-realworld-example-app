@@ -41,7 +41,13 @@ jobs:
 
         # Navigate to the extracted directory and build the CLI tool
         cd cyclonedx-cli-source/cyclonedx-cli-$VERSION
-        dotnet publish -c Release -o ./output
+
+        # Build the CLI (with publish to ensure it creates a bin folder)
+        dotnet publish -c Release -r linux-x64 --self-contained -o ./output
+
+        # Verify the output directory
+        echo "Output directory contents:"
+        ls ./output
 
         # Move the CLI tool binary to a directory in PATH
         sudo mv ./output/cyclonedx-cli /usr/local/bin/cyclonedx-cli
