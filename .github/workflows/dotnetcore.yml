@@ -11,23 +11,24 @@ jobs:
     - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.204
-
-    - run: dotnet restore build/build.csproj
-    - run: dotnet test build/build.csproj
-   
+    - run: |
+        dotnet restore build/build.csproj
+        dotnet build build/build.csproj
+        dotnet test build/build.csproj
+      
     - name: Install CycloneDX CLI
       run: dotnet tool install --global CycloneDX
-      
-   - name: Install Kondukto CLI
+
+    - name: Install Kondukto CLI
       run: |
         curl -sSL https://cli.kondukto.io | sudo sh
         echo "KONDUKTO_HOST=NEWENV_VAR123" >> $GITHUB_ENV
         echo "KONDUKTO_TOKEN=NEWENV_VAR123" >> $GITHUB_ENV
-        
+
     - name: Generate SBOM
       run: |
         dotnet CycloneDX -j Conduit.sln -o sbom.json
-        
-- name: check
+
+    - name: check
       run: |
         kdt sbom import -p projectname -f sbom.json -b master
